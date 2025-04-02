@@ -94,14 +94,13 @@ async def register_user(user: UserCreate, db: Annotated[AsyncSession, Depends(ge
     user.password = get_password_hash(user.password)
     db_user = User(username=user.username,
                    password_hash=user.password,
-                   email=user.email,
                    )
     try:
         db.add(db_user)
         await db.commit()
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=400, detail="Email or username already registered")
+        raise HTTPException(status_code=400, detail="User already registered")
     return {"message": "User registered successfully"}
 
 @router.post("/logout")

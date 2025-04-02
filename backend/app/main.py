@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import database
 from app.routers import products
-from app.auth.routes import auth_router
+from app.auth.routes import router as auth_router
 
 
 @asynccontextmanager

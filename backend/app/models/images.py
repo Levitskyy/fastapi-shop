@@ -14,4 +14,4 @@ class Image(Base):
     path: Mapped[str]
 
     # relationships
-    product: Mapped["Product"] = relationship(back_populates='images')
+    product: Mapped["Product"] = relationship(back_populates='images', lazy='joined')

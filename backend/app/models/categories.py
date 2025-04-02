@@ -14,4 +14,4 @@ class Category(Base):
     title: Mapped[str] = mapped_column(String(64), unique=True, index=True)
 
     # relationships
-    products: Mapped[list["Product"]] = relationship(back_populates='category')
+    products: Mapped[list["Product"]] = relationship(back_populates='category', lazy="selectin")
