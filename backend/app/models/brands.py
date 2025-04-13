@@ -14,4 +14,4 @@ class Brand(Base):
     title: Mapped[str] = mapped_column(String(64), unique=True, index=True)
 
     # relationships
-    product: Mapped[list["Product"]] = relationship(back_populates='brand', lazy="selectin")
+    products: Mapped[list["Product"]] = relationship(back_populates='brand', lazy="selectin")

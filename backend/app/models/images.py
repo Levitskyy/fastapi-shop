@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from app.models.base import Base
 
@@ -11,6 +11,7 @@ class Image(Base):
     __tablename__ = 'Images'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey('Products.id'))
     path: Mapped[str]
 
     # relationships
