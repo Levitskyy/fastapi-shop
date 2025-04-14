@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from app.schemas.user import UserGet
+from app.schemas.user import UserBase, UserGet
 
 class CategoryBase(BaseModel):
     id: int | None = None

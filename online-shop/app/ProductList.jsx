@@ -4,12 +4,14 @@ import {
   TableHead, TableRow, Paper, Typography,
   TextField, TablePagination, Box, Button,
 } from "@mui/material";
+import { useAuth } from "../context/authContext";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
+  const { fetchWithAuth } = useAuth();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -27,6 +29,28 @@ const ProductList = () => {
   
       fetchProducts();
   }, [page, limit, search]);
+
+  const handlePurchase = async (productId) => {
+    const url = `http://localhost:8000/api/purchases/buy/${productId}`;
+
+    try {
+      const response = await fetchWithAuth(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка при выполнении запроса');
+      }
+
+      alert("Покупка успешно оформлена");
+    } catch (error) {
+      console.error("Ошибка при создании покупки: ", error);
+      alert("Ошибка при покупке");
+    }
+  }
 
   return (
     <TableContainer component={Paper} sx={{ mt: 4 }}>
@@ -72,7 +96,7 @@ const ProductList = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => alert(`Приобретение товара: ${product.title}`)}
+                    onClick={() => handlePurchase(product.id)}
                 >
                     Приобрести
                 </Button>

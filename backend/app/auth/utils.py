@@ -65,7 +65,7 @@ class RoleChecker:
 
     def __call__(self, user: Annotated[User, Depends(get_current_active_user)]):
         if user.role in self.allowed_roles:
-            return True
+            return user
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have enough permissions",

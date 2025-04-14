@@ -36,8 +36,7 @@ const ManagePurchases = () => {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell>Купленный продукт</TableCell>
-            <TableCell>Приобретший пользователь</TableCell>
-            <TableCell>Количество товара</TableCell>
+            <TableCell>Купил</TableCell>
             <TableCell>Действия</TableCell>
           </TableRow>
         </TableHead>
@@ -48,7 +47,7 @@ const ManagePurchases = () => {
               <TableCell>{purchase.product.title}</TableCell>
               <TableCell>{purchase.user.username}</TableCell>
               <TableCell>
-                <Button color="error" onClick={() => router.push(`/purchase/delete/${purchase.id}`)}>Удалить</Button>
+                <Button color="error" onClick={() => router.push(`/manage/purchases/delete/${purchase.id}`)}>Удалить</Button>
               </TableCell>
             </TableRow>
           ))}
