@@ -61,7 +61,7 @@ const ProductList = () => {
                     {product.images.length > 0 ? (
                         <img width="150px" height="150px" src={`http://localhost:8000/api${product.images[0].path}`} />
                     ) : (
-                        <img src={`http://localhost:8000/api/static/images/std.png`} />
+                        <img width="150px" height="150px" src={`http://localhost:8000/api/static/images/std.png`} />
                     )}
                 </TableCell>
                 <TableCell>{product.title}</TableCell>
@@ -92,7 +92,7 @@ const ProductList = () => {
           setLimit(parseInt(e.target.value, 10));
           setPage(1);
         }}
-        rowsPerPageOptions={[5, 10, 20, 50]}
+        rowsPerPageOptions={[1, 5, 10, 20, 50]}
       />
     </TableContainer>
   );

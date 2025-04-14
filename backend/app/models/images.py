@@ -11,8 +11,8 @@ class Image(Base):
     __tablename__ = 'Images'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    product_id: Mapped[int] = mapped_column(ForeignKey('Products.id'))
+    product_id: Mapped[int] = mapped_column(ForeignKey('Products.id', ondelete='CASCADE'))
     path: Mapped[str]
 
     # relationships
-    product: Mapped["Product"] = relationship(back_populates='images', lazy='joined')
+    product: Mapped["Product"] = relationship(back_populates='images', lazy='joined', passive_deletes=True)

@@ -6,10 +6,10 @@ from sqlalchemy import delete, select
 from app.auth.models import RefreshToken
 from app.config import get_settings
 from app.models.user import User
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, User as UserSchema, UserGet, UserUpdate
 from app.auth.jwt import create_access_token, create_refresh_token, verify_refresh_token, verify_token
-from app.auth.utils import authenticate_user, get_user, verify_password, get_password_hash, get_current_user, get_current_active_user
-from app.database import get_db
+from app.auth.utils import RoleChecker, authenticate_user, get_user, verify_password, get_password_hash, get_current_user, get_current_active_user
+from app.database import SessionDep, get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 import logging
@@ -120,4 +120,70 @@ async def logout_user(response: Response,
     else:
         response.delete_cookie('refresh_token')
         return True
+    
+@router.delete('/users/one/{id}')
+async def delete_user(
+    id: int,
+    db: SessionDep,
+    user: Annotated[User, Depends(RoleChecker(['admin']))],
+) -> int:
+    query = select(User).where(User.id==id)
+    db_user = (await db.execute(query)).scalar_one_or_none()
 
+    if not db_user:
+        raise HTTPException(status_code=404, detail='Запрошенный пользователь не найден')
+    
+    db_id = db_user.id
+    await db.delete(db_user)
+    await db.commit()
+    return db_id
+
+@router.get('/users/one/{name}')
+async def get_user(
+    name: str,
+    db: SessionDep,
+    user: Annotated[User, Depends(RoleChecker(['admin']))],
+) -> UserGet:
+    query = select(User).where(User.username==name)
+    db_user = (await db.execute(query)).scalar_one_or_none()
+
+    if not db_user:
+        raise HTTPException(status_code=404, detail='Запрошенный пользователь не найден')
+    
+
+    return UserGet(id=db_user.id, username=db_user.username, disabled=db_user.disabled, role=db_user.role)
+
+@router.get('/users/all')
+async def get_all_users(
+    db: SessionDep,
+    user: Annotated[User, Depends(RoleChecker(['admin']))],
+) -> list[UserGet]:
+    query = select(User)
+    db_users = (await db.execute(query)).scalars().all()
+
+    users = [UserGet(id=user.id, username=user.username, disabled=user.disabled, role=user.role) for user in db_users]
+    return users
+
+@router.patch('/users/one/{username}')
+async def patch_user(
+    username: str,
+    user_update: UserUpdate,
+    db: SessionDep,
+    user: Annotated[User, Depends(RoleChecker(['admin']))],
+) -> UserGet:
+    query = select(User).where(User.username==username)
+    db_user = (await db.execute(query)).scalar_one_or_none()
+
+    if not db_user:
+        raise HTTPException(status_code=404, detail='Запрошенный пользователь не найден')
+    
+    for attr, val in user_update.model_dump().items():
+        if val is not None and attr != "password":
+            setattr(db_user, attr, val)
+
+    db_user.password_hash = get_password_hash(user_update.password)        
+    
+    await db.commit()
+    await db.refresh(db_user)
+
+    return db_user

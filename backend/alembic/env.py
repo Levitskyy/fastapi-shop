@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.models.base import Base
-from app.models.products import Product
+from app.models.products import Product, Purchase
 from app.models.brands import Brand
 from app.models.categories import Category
 from app.models.images import Image

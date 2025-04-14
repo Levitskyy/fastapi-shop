@@ -61,11 +61,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const refreshAccessToken = async () => {
-        const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_HTTP_BACK}/auth/refresh`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_HTTP_BACK}/auth/refresh`, {
             method: 'POST',
             credentials: 'include',
         });
-
+        console.log(response.ok);
         if (response.ok) {
             const data = await response.json();
             setToken(data.access_token);

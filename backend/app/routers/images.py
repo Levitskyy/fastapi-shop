@@ -3,7 +3,7 @@ import shutil
 from typing import Annotated
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
 
@@ -71,9 +71,9 @@ MAX_FILE_SIZE = 3 * 1024 * 1024
 @router.post('/upload')
 async def upload_image(
     file: UploadFile,
-    product: str, 
     db: SessionDep,
     user: Annotated[User, Depends(RoleChecker(['admin', 'manager']))],
+    product_id: int = Form(), 
     ) -> ImageBase:
     if file.content_type not in ["image/jpeg", "image/png"]:
         raise HTTPException(status_code=400, detail="Неподходящий тип файла. Выберите файл с расширением png или jpg")
@@ -81,7 +81,7 @@ async def upload_image(
     if file.size > MAX_FILE_SIZE:
         raise HTTPException(status_code=400, detail="Файл слишком большой. Максимальный размер 3 МБ")
     
-    query = select(Product).where(Product.title==product)
+    query = select(Product).where(Product.id==product_id)
     db_product = (await db.execute(query)).scalar_one_or_none()
 
     if not db_product:

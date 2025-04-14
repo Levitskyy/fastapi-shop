@@ -2,6 +2,10 @@ from datetime import datetime, UTC
 from sqlalchemy import String, func
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from app.models.base import Base
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models.products import Purchase
 
 
 class User(Base):
@@ -14,3 +18,5 @@ class User(Base):
     disabled: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), server_onupdate=func.now())
+
+    purchases: Mapped[list["Purchase"]] = relationship(back_populates='user', lazy='selectin', cascade='all, delete-orphan', passive_deletes=True)
