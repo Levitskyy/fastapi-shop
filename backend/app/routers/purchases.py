@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy import select
 
 from app.schemas.product import ProductBase, PurchaseBase
@@ -55,6 +55,7 @@ async def buy_product(
     db.add(new_purchase)
     await db.commit()
     await db.refresh(new_purchase)
+    await notify_managers(f"Покупка: {new_purchase.product.title} (Пользователь: {new_purchase.user.username})")
 
 @router.delete('/{id}')
 async def delete_purchase(
@@ -71,3 +72,19 @@ async def delete_purchase(
     db.delete(result)
     await db.commit()
     return True
+
+active_connections: list[WebSocket] = []
+
+@router.websocket("/notifications")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    active_connections.append(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        active_connections.remove(websocket)
+
+async def notify_managers(message: str):
+    for connection in active_connections:
+        await connection.send_text(message)
