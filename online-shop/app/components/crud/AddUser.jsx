@@ -6,7 +6,6 @@ import { useAuth } from "../../../context/authContext";
 const AddUser = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");  // Например, роль пользователя (admin, user и т.д.)
   const { fetchWithAuth } = useAuth();
 
   const handleSubmit = (event) => {
@@ -31,7 +30,6 @@ const AddUser = () => {
         alert("Пользователь добавлен!");
         setUsername("");
         setPassword("");
-        setRole("");
       } else {
         console.error("Error, user not added");
       }
@@ -60,18 +58,6 @@ const AddUser = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Роль</InputLabel>
-          <Select
-            value={role}
-            label="Роль"
-            onChange={(e) => setRole(e.target.value)}
-          >
-            <MenuItem value="admin">Администратор</MenuItem>
-            <MenuItem value="manager">Менеджер</MenuItem>
-            <MenuItem value="user">Пользователь</MenuItem>
-          </Select>
-        </FormControl>
         <Button type="submit" variant="contained">Добавить пользователя</Button>
       </form>
     </Container>

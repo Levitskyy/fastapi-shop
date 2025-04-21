@@ -5,7 +5,10 @@ import LogoutButton from "./logoutButton";
 
 export default async function AuthButtons() {
     const cookieStore = await cookies();
-    const userName = getCurrentUser(cookieStore.get('refresh_token')?.value);
+    const user = getCurrentUser(cookieStore.get('refresh_token')?.value);
+    const userName = user?.userName;
+    const role = user?.role;
+
 
     return (
         <div>
